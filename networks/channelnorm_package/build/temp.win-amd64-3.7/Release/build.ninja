@@ -1,0 +1,26 @@
+ninja_required_version = 1.3
+cxx = cl
+nvcc = C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.3\bin\nvcc
+
+cflags = /nologo /Ox /W3 /GL /DNDEBUG /MD /MD /wd4819 /EHsc -ID:\anaconda3\envs\flow\lib\site-packages\torch\include -ID:\anaconda3\envs\flow\lib\site-packages\torch\include\torch\csrc\api\include -ID:\anaconda3\envs\flow\lib\site-packages\torch\include\TH -ID:\anaconda3\envs\flow\lib\site-packages\torch\include\THC "-IC:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.3\include" -ID:\anaconda3\envs\flow\include -ID:\anaconda3\envs\flow\include "-IC:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\ATLMFC\include" "-IC:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\ucrt" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\shared" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\um" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\winrt" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\cppwinrt"
+post_cflags = -std=c++14 -DTORCH_API_INCLUDE_EXTENSION_H -DTORCH_EXTENSION_NAME=channelnorm_cuda -D_GLIBCXX_USE_CXX11_ABI=0 /std:c++14
+cuda_cflags = -Xcompiler /MD -Xcompiler /wd4819 -Xcompiler /EHsc -ID:\anaconda3\envs\flow\lib\site-packages\torch\include -ID:\anaconda3\envs\flow\lib\site-packages\torch\include\torch\csrc\api\include -ID:\anaconda3\envs\flow\lib\site-packages\torch\include\TH -ID:\anaconda3\envs\flow\lib\site-packages\torch\include\THC "-IC:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.3\include" -ID:\anaconda3\envs\flow\include -ID:\anaconda3\envs\flow\include "-IC:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\ATLMFC\include" "-IC:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\ucrt" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\shared" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\um" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\winrt" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\cppwinrt"
+cuda_post_cflags = -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode arch=compute_52,code=sm_52 -gencode arch=compute_60,code=sm_60 -gencode arch=compute_61,code=sm_61 -gencode arch=compute_70,code=sm_70 -gencode arch=compute_70,code=compute_70 -DTORCH_API_INCLUDE_EXTENSION_H -DTORCH_EXTENSION_NAME=channelnorm_cuda -D_GLIBCXX_USE_CXX11_ABI=0
+ldflags = 
+
+rule compile
+  command = cl /showIncludes $cflags -c $in /Fo$out $post_cflags
+  deps = msvc
+
+rule cuda_compile
+  command = $nvcc $cuda_cflags -c $in -o $out $cuda_post_cflags
+
+
+
+build D$:\code\flownet2-pytorch-master\networks\channelnorm_package\build\temp.win-amd64-3.7\Release\channelnorm_cuda.obj: compile D$:\code\flownet2-pytorch-master\networks\channelnorm_package\channelnorm_cuda.cc
+build D$:\code\flownet2-pytorch-master\networks\channelnorm_package\build\temp.win-amd64-3.7\Release\channelnorm_kernel.obj: cuda_compile D$:\code\flownet2-pytorch-master\networks\channelnorm_package\channelnorm_kernel.cu
+
+
+
+
+
